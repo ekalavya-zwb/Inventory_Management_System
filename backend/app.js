@@ -102,25 +102,54 @@ app.get("/api/orderItems/:id", async (req, res) => {
 });
 
 app.post("/api/orders", async (req, res) => {
-  const { warehouse_id, product_id, customer_name, quantity } = req.body;
+  const { warehouse_id, customer_name, items } = req.body;
+
+  const connection = await con.getConnection();
 
   try {
-    const sql = `CALL order_placement (?, ?, ?, ?, @order_id);`;
-    const values = [warehouse_id, product_id, customer_name, quantity];
+    await connection.beginTransaction();
 
-    await con.query(sql, values);
+    const [rows] = await connection.query(
+      "SELECT COUNT(*) AS count FROM warehouses WHERE warehouse_id = ?",
+      [warehouse_id],
+    );
 
-    const [result] = await con.query("SELECT @order_id AS order_id");
+    if (rows[0].count === 0) {
+      throw new Error("Warehouse does not exist");
+    }
+
+    const [result] = await connection.query(
+      `INSERT INTO orders (customer_name, order_date, warehouse_id, status)
+       VALUES (?, NOW(), ?, 'PLACED')`,
+      [customer_name, warehouse_id],
+    );
+
+    const order_id = result.insertId;
+
+    for (const item of items) {
+      await connection.query(`CALL order_placement (?, ?, ?, ?)`, [
+        order_id,
+        warehouse_id,
+        item.product_id,
+        item.quantity,
+      ]);
+    }
+
+    await connection.commit();
 
     res.status(201).json({
       message: "Order placed successfully",
-      order_id: result[0].order_id,
+      order_id,
     });
   } catch (error) {
+    await connection.rollback();
+
     console.error(`POST /api/orders:`, error);
     res.status(400).json({
-      message: error.sqlMessage || "Order placement failed",
+      message: error.message || "Order placement failed",
     });
+  } finally {
+    connection.release();
   }
 });
 
@@ -138,7 +167,7 @@ app.put("/api/orders/:id/cancel", async (req, res) => {
   } catch (error) {
     console.error(`PUT /api/orders/${order_id}/cancel":`, error);
     res.status(400).json({
-      message: error.sqlMessage || "Order cancellation failed",
+      message: error.message || "Order cancellation failed",
     });
   }
 });

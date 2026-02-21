@@ -92,11 +92,23 @@ const OrderList = () => {
   };
 
   useEffect(() => {
-    loadOrdersList();
     loadWarehousesList();
+  }, []);
+
+  useEffect(() => {
+    loadOrdersList();
     setCurrentPage(1);
-    setSuccess(false);
   }, [filters]);
+
+  useEffect(() => {
+    if (success) {
+      const timer = setTimeout(() => {
+        setSuccess(false);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [success]);
 
   let updateFilters = (key, value) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
@@ -170,7 +182,11 @@ const OrderList = () => {
       )}
 
       {success && (
-        <Alert severity="success" sx={{ mb: 2 }}>
+        <Alert
+          severity="success"
+          sx={{ mb: 2 }}
+          onClose={() => setSuccess(false)}
+        >
           <Typography fontWeight={600}>
             Order cancelled successfully!
           </Typography>
@@ -209,7 +225,6 @@ const OrderList = () => {
           onClick={() => {
             loadOrdersList();
             loadWarehousesList();
-            setSuccess(false);
           }}
           disabled={loadingWarehouses || loadingOrders}
         >

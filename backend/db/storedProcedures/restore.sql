@@ -21,7 +21,7 @@ BEGIN
 
     IF order_exists = 0 THEN
         SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Order does not exist!';
+        SET MESSAGE_TEXT = 'Order does not exist';
     END IF;
 
     SELECT status INTO order_status
@@ -30,7 +30,7 @@ BEGIN
 
     IF order_status <> "PLACED" THEN
         SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Only PLACED orders can be cancelled!';
+        SET MESSAGE_TEXT = 'Only placed orders can be cancelled';
     END IF;
 
     UPDATE orders

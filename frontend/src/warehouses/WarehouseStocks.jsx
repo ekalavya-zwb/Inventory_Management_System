@@ -139,8 +139,8 @@ const WarehouseStocks = () => {
 
       {!loadingKPIs && (
         <Grid container spacing={3} mb={5}>
-          {KPIs.map((item, index) => (
-            <Grid size={{ xs: 12, sm: 3 }} key={index}>
+          {KPIs.map((item) => (
+            <Grid size={{ xs: 12, sm: 3 }} key={item.label}>
               <Paper
                 elevation={3}
                 sx={{
@@ -198,12 +198,24 @@ const WarehouseStocks = () => {
       </Box>
 
       <Box sx={{ mb: 2 }}>
-        <Stack direction="row" spacing={3} useFlexGap flexWrap="wrap">
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            gap: 2,
+            flexWrap: "wrap",
+          }}
+        >
           <TextField
             size="small"
             label="Search"
             placeholder="Search by Product Name or SKU"
-            sx={{ width: 1380 }}
+            fullWidth
+            sx={{
+              flex: 1,
+              minWidth: 250,
+            }}
             value={filters.search}
             onChange={(e) =>
               setFilters((prev) => ({ ...prev, search: e.target.value }))
@@ -216,10 +228,11 @@ const WarehouseStocks = () => {
             size="medium"
             sx={{ height: 40 }}
             onClick={() => setFilters({ search: "" })}
+            disabled={!filters.search}
           >
             Clear
           </Button>
-        </Stack>
+        </Box>
 
         <Typography variant="subtitle1" fontWeight={600} sx={{ mt: 2 }}>
           {filteredStock.length} Results
