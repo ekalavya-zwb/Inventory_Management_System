@@ -446,12 +446,14 @@ const PlaceOrder = () => {
                             )?.quantity || 0
                           }
                           onChange={(e) => {
+                            const inputValue = Number(e.target.value);
+
                             const value =
-                              Number(e.target.value) > stock.quantity
+                              inputValue > stock.quantity
                                 ? stock.quantity
-                                : Number(e.target.value) < 0
+                                : inputValue < 0
                                   ? 0
-                                  : Number(e.target.value);
+                                  : inputValue;
 
                             handleQuantityChange(stock, value);
                           }}
