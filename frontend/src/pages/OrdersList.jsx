@@ -308,6 +308,7 @@ const OrderList = () => {
             variant="outlined"
             size="medium"
             sx={{ height: 40 }}
+            disabled={!Object.values(filters).some(Boolean)}
             onClick={() => setFilters(emptyFilters)}
           >
             Clear
