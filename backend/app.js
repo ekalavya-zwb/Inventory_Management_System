@@ -145,9 +145,7 @@ app.post("/api/orders", async (req, res) => {
     await connection.rollback();
 
     console.error(`POST /api/orders:`, error);
-    res.status(400).json({
-      message: error.message || "Order placement failed",
-    });
+    res.status(400).json({ message: "Order placement failed" });
   } finally {
     connection.release();
   }
