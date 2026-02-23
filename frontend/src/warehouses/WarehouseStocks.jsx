@@ -38,6 +38,7 @@ const WarehouseStocks = () => {
   const [loadingStockItems, setLoadingStockItems] = useState(true);
   const [loadingKPIs, setLoadingKPIs] = useState(true);
   const [filters, setFilters] = useState({ search: "" });
+  const [debouncedProduct, setDebouncedProduct] = useState(filters.search);
   const { id } = useParams();
 
   const loadWarehouseStocksMetrics = async (id) => {
@@ -75,8 +76,16 @@ const WarehouseStocks = () => {
     }
   }, [id]);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedProduct(filters.search);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [filters.search]);
+
   const filteredStock = useMemo(() => {
-    const searchValue = filters.search.toLowerCase().trim();
+    const searchValue = debouncedProduct.toLowerCase().trim();
 
     if (!searchValue) return stockItems;
 
@@ -85,7 +94,7 @@ const WarehouseStocks = () => {
         stock.product_name.toLowerCase().includes(searchValue) ||
         stock.sku.toLowerCase().includes(searchValue),
     );
-  }, [filters.search, stockItems]);
+  }, [debouncedProduct, stockItems]);
 
   const KPIs = [
     { label: "Total Products", value: stockMetrics.totalProducts },

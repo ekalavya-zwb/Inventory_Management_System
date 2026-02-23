@@ -39,6 +39,9 @@ const OrderList = () => {
   const [orders, setOrders] = useState([]);
   const [warehouses, setWarehouses] = useState([]);
   const [filters, setFilters] = useState(emptyFilters);
+  const [debouncedCustomer, setDebouncedCustomer] = useState(
+    filters.customer_name,
+  );
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
   const [error, setError] = useState(null);
@@ -93,12 +96,27 @@ const OrderList = () => {
 
   useEffect(() => {
     loadWarehousesList();
+    loadOrdersList();
   }, []);
 
   useEffect(() => {
-    loadOrdersList();
     setCurrentPage(1);
-  }, [filters]);
+  }, [
+    debouncedCustomer,
+    filters.order_id,
+    filters.warehouse_id,
+    filters.status,
+    filters.order_date,
+    filters.total_amount,
+  ]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedCustomer(filters.customer_name);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [filters.customer_name]);
 
   useEffect(() => {
     if (success) {
@@ -116,7 +134,8 @@ const OrderList = () => {
 
   let filteredOrders = useMemo(() => {
     let result = orders.filter((order) => {
-      const { order_id, customer_name, warehouse_id, status } = filters;
+      const { order_id, warehouse_id, status } = filters;
+      const customer_name = debouncedCustomer;
 
       if (order_id && Number(order.order_id) !== Number(order_id)) return false;
 
@@ -152,7 +171,7 @@ const OrderList = () => {
     }
 
     return result;
-  }, [orders, filters]);
+  }, [orders, filters, debouncedCustomer]);
 
   const filtersCount = useMemo(() => {
     return Object.values(filters).filter(
