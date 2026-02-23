@@ -282,7 +282,7 @@ const PlaceOrder = () => {
   return (
     <Container maxWidth="xl">
       {error && (
-        <Alert severity="error" sx={{ mb: 3 }}>
+        <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError(null)}>
           <Typography fontWeight={600}>{error}</Typography>
         </Alert>
       )}
@@ -446,10 +446,13 @@ const PlaceOrder = () => {
                             )?.quantity || 0
                           }
                           onChange={(e) => {
-                            const value = Math.max(
-                              0,
-                              Math.min(Number(e.target.value), stock.quantity),
-                            );
+                            const value =
+                              Number(e.target.value) > stock.quantity
+                                ? stock.quantity
+                                : Number(e.target.value) < 0
+                                  ? 0
+                                  : Number(e.target.value);
+
                             handleQuantityChange(stock, value);
                           }}
                           inputProps={{

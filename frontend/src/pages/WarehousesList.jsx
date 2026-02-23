@@ -44,7 +44,7 @@ const WarehousesList = () => {
   return (
     <Container maxWidth="xl">
       {error && (
-        <Alert severity="error" sx={{ mb: 2 }}>
+        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
           <Typography fontWeight={600}>{error}</Typography>
         </Alert>
       )}
