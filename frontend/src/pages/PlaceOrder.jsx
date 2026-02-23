@@ -87,9 +87,6 @@ const PlaceOrder = () => {
   };
 
   const handleQuantityChange = (product, value) => {
-    if (value < 0) value = 0;
-    if (value > product.quantity) value = product.quantity;
-
     setCartItems((prev) => {
       const existing = prev.find(
         (item) => item.product_id === product.product_id,
