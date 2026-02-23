@@ -237,7 +237,7 @@ const PlaceOrder = () => {
             <Typography>Customer: {inputs.customer_name}</Typography>
 
             <Typography>
-              Warehouse: {selectedWarehouse?.warehouse_name}
+              Warehouse: {selectedWarehouse.warehouse_name}
             </Typography>
 
             <Typography>
@@ -360,7 +360,7 @@ const PlaceOrder = () => {
             {
               warehouses.find(
                 (warehouse) => warehouse.warehouse_id == inputs.warehouse_id,
-              )?.warehouse_name
+              ).warehouse_name
             }
           </Typography>
 
@@ -513,7 +513,7 @@ const PlaceOrder = () => {
                   {
                     warehouses.find(
                       (w) => w.warehouse_id == inputs.warehouse_id,
-                    )?.warehouse_name
+                    ).warehouse_name
                   }
                 </Typography>
               </Box>
